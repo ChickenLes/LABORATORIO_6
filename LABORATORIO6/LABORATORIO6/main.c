@@ -1,13 +1,14 @@
 
+
 //-----------------------------------------------
 // UNIVERSIDAD DEL VALLE DE GUATEMALA
 // IE2023: PROGRAMACION DE MICROCONTROLADORES
 // PRELAB6.c
 // AUTOR: ANTHONY ALEJANDRO BOTEO LÓPEZ
-// PROYECTO: PRELABORATORIO 4
+// PROYECTO: LABORATORIO 6
 // HARDWARE: ATMEGA328P
-// CREADO: 4/21/2025 2:27:32 PM
-// ULTIMA MODIFICACION: 4/24/2025 
+// CREADO: 4/25/2025 4:57:32 PM
+// ULTIMA MODIFICACION: 4/25/2025
 // DESCRIPCIÓN:
 //-----------------------------------------------
 #define F_CPU 16000000UL
@@ -16,7 +17,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
-#include <stdio.h>  
+#include <stdio.h>
 
 
 
@@ -49,7 +50,7 @@ void ADC_conf() {
 
 
 ////////////////////////////////////////////INTERRUPCION//////////////////////////////////////////
-ISR(USART_RX_vect) {  
+ISR(USART_RX_vect) {
 	DATO_RECIBIDO = UDR0;	//GUARDAR UDR0
 	DATO_ENVIADO = 1; //ACTIVAR BANDERA DEBIDO A DATO RECIBIDO
 }
@@ -69,14 +70,22 @@ uint16_t LEER_ADC() {
 
 ///////////////////////////////////////////CONFIGURANDO SALIDAS///////////////////////////
 void LED_conf() {
-	DDRD |= 0b11111100;  //PD2-PD7 
-	DDRB |= 0b00000011;  //PB0-PB1 
+	DDRD |= 0b11111100;  //PD2-PD7
+	DDRB |= 0b00000011;  //PB0-PB1
 }
+
+//////////////////////////////////////////LABORATORIO////////////////////////////////////
+void CADENA(char txt[]) {
+	for (uint8_t i = 0; txt[i] != '\0'; i++) { //IR CARACTER POR CARACTER
+		ENVIAR_UART(txt[i]);
+	}
+}
+
 
 ////////////////////////////////////////CONVIRTIENDO LEDS/////////////////////////////////
 void MOSTRAR_LED(uint8_t data) {
-	PORTD = (PORTD & 0b00000011) | ((data << 2) & 0b11111100); 
-	PORTB = (PORTB & 0b11111100) | ((data >> 6) & 0b00000011);  
+	PORTD = (PORTD & 0b00000011) | ((data << 2) & 0b11111100);
+	PORTB = (PORTB & 0b11111100) | ((data >> 6) & 0b00000011);
 }
 
 //////////////////////////////MAIN/////////////////////////////////////////////////
@@ -87,6 +96,8 @@ int main() {
 
 	uint8_t GUARDAR_VALOR = 0;
 	uint32_t CONTADOR2 = 0;	//ULTIMO TIEMPO ENVIADO
+
+	CADENA("Ya no hay más labs maldita sea\n");
 
 	while (1) {
 		_delay_ms(1);
@@ -112,7 +123,7 @@ int main() {
 		if (COUNTER - CONTADOR2 >= 500) {
 			char buffer[10];
 			sprintf(buffer, "ADC: %u\n", VALOR_ADC); // "u" VALOR DECIMAL, "X" hexa y .2fV voltaje
-			for (char *p = buffer; *p != '\0'; p++) ENVIAR_UART(*p);
+			CADENA(buffer);
 			CONTADOR2 = COUNTER;
 		}
 
